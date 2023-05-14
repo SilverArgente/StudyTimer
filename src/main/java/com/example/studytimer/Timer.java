@@ -56,15 +56,7 @@ public class Timer extends Application {
         clock.setTranslateX(0);
         clock.setTranslateY(-50);
 
-
-        // presetBtn.setOnAction(e -> window.setScene(presetScene));
-
-        // Layout
-//        VBox layout1 = new VBox(20);
-//        layout1.getChildren().addAll(clock, presetBtn);
-//        timerScene = new Scene(layout1, 500, 500);
-
-        // Button functionality
+        
         timerButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
