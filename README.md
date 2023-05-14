@@ -1,2 +1,2 @@
 # StudyTimer
-A study timer application written using JavaFx
+A simple study timer application written using JavaFx
