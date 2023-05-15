@@ -6,7 +6,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -33,52 +33,53 @@ public class Timer extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        // String stylesheet = getClass().getResource("/style.css").toExternalForm();
+
         window = primaryStage;
 
-        // Set stage title
-        window.setTitle("TimeSavvy");
+        // Create Display
+        BorderPane layout = new BorderPane();
+        layout.getStyleClass().add("bg-1");
 
-        // Timer Button
-        timerButton = new Button();
-        timerButton.setText("Timer");
-        timerButton.setTranslateX(0);
-        timerButton.setTranslateY(50);
+        // Label timer display
+        Label clock = new Label("0:00");
+        clock.getStyleClass().add("bg-1");
+        layout.setCenter(clock);
 
-        // Create Presets Button
-        createPresetsButton = new Button();
-        createPresetsButton.setText("Create Preset");
-        createPresetsButton.setTranslateX(-200);
-        createPresetsButton.setTranslateY(-230);
-
-        // Create Time Count Label
-        clock = new Label("0:00");
-        clock.setFont(new Font("Arial", 24));
-        clock.setTranslateX(0);
-        clock.setTranslateY(-50);
-
-        
-        timerButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                System.out.println("button was clicked! thanks bucky java!");
+        // Play timer button
+        Button play = new Button("Play");
+        play.getStyleClass().add("bg-1");
+        layout.setBottom(play);
+        play.setOnAction(e -> {
+            if (e.getSource() == play && !timerIsRunning) {
+                timerIsRunning = true;
+                checkTimerState();
+            }
+            else {
+                timerIsRunning = false;
+                checkTimerState();
             }
         });
 
-
-
-        // Create scene, add button to scene
-        StackPane layout = new StackPane();
-
         Scene scene = new Scene(layout, 500, 500);
+        // scene.getStylesheets().add(stylesheet);
 
-        layout.getChildren().addAll(timerButton, createPresetsButton, clock);
-
-        scene.setFill(Color.BLACK);
-
-        // Set scene to stage, show stage
+        window.setTitle("TimeSavvy");
         window.setScene(scene);
         window.show();
 
+    }
+
+    // Checks timer state on each click of play button
+    public void checkTimerState() {
+        if (timerIsRunning) {
+            // Play timer
+            System.out.println("Timer is running!");
+        }
+        else {
+            // Stop timer
+            System.out.println("Timer has been stopped!");
+        }
     }
 
 }
