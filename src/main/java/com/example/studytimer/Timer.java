@@ -27,11 +27,12 @@ public class Timer extends Application {
 
     Label clock = new Label("00:00:00");
 
-
     static boolean timerIsRunning;
+    boolean isPaused = false;
 
     private static final Duration INTERVAL = Duration.seconds(1);
-    long elapsedTime;
+    long elapsedTime = 0;
+    long timeAtPause = 0;
 
     private long startTime;
     private Timeline timeline;
@@ -65,8 +66,8 @@ public class Timer extends Application {
         // If Play Button is clicked
         play.setOnAction(e -> {
             // Play
-            if (e.getSource() == play && !timerIsRunning) {
-                play.setText("Stop");
+            if (!timerIsRunning) {
+                play.setText("Pause");
                 startTimer();
             }
             // Stop
@@ -85,28 +86,36 @@ public class Timer extends Application {
 
     }
 
-    // Plays timer, keeps track of time
+    // Plays timer
     private void startTimer() {
         startTime = System.currentTimeMillis();
+        timerIsRunning = true;
 
         timeline = new Timeline(new KeyFrame(INTERVAL, event -> {
-            elapsedTime = System.currentTimeMillis() - startTime;
+            // Formula for elapsed time
+            // Time elapsed since button press (current time - start time at button press) + previous time at pause, if any
+            elapsedTime = (System.currentTimeMillis() - startTime) + timeAtPause;
+
+            // Updates display text with elapsed time
             updateElapsedTime(elapsedTime);
         }));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
 
-        timerIsRunning = true;
     }
 
+    // Pauses timer
     private void stopTimer() {
         if (timeline != null) {
             timeline.stop();
             timeline = null;
             timerIsRunning = false;
+            isPaused = true;
+            timeAtPause = elapsedTime;
         }
     }
 
+    // Updates label text to display elapsed time
     private void updateElapsedTime(long elapsedTime) {
         long seconds = elapsedTime / 1000;
         long minutes = seconds / 60;
@@ -118,7 +127,7 @@ public class Timer extends Application {
         String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
 
         Platform.runLater(() -> {
-            String savedTimerText = timeString;
+            // this.elapsedTime = elapsedTime;
             clock.setText(timeString);
         });
     }
