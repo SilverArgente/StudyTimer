@@ -24,21 +24,17 @@ public class Timer extends Application {
 
     // Init variables
     Stage window;
-    Scene timerScene, presetScene;
-    Button timerButton, createPresetsButton;
 
     Label clock = new Label("00:00:00");
-    String newTimerText = "";
+
 
     static boolean timerIsRunning;
 
     private static final Duration INTERVAL = Duration.seconds(1);
-
-    private java.util.Timer timer;
+    long elapsedTime;
 
     private long startTime;
     private Timeline timeline;
-
 
     public static void main(String[] args) {
         // Init
@@ -65,14 +61,16 @@ public class Timer extends Application {
         Button play = new Button("Play");
         play.getStyleClass().add("bg-1");
         layout.setBottom(play);
+
+        // If Play Button is clicked
         play.setOnAction(e -> {
+            // Play
             if (e.getSource() == play && !timerIsRunning) {
-                timerIsRunning = true;
                 play.setText("Stop");
                 startTimer();
             }
+            // Stop
             else {
-                timerIsRunning = false;
                 play.setText("Play");
                 stopTimer();
             }
@@ -92,17 +90,20 @@ public class Timer extends Application {
         startTime = System.currentTimeMillis();
 
         timeline = new Timeline(new KeyFrame(INTERVAL, event -> {
-            long elapsedTime = System.currentTimeMillis() - startTime;
+            elapsedTime = System.currentTimeMillis() - startTime;
             updateElapsedTime(elapsedTime);
         }));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
+
+        timerIsRunning = true;
     }
 
     private void stopTimer() {
         if (timeline != null) {
             timeline.stop();
             timeline = null;
+            timerIsRunning = false;
         }
     }
 
@@ -117,6 +118,7 @@ public class Timer extends Application {
         String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
 
         Platform.runLater(() -> {
+            String savedTimerText = timeString;
             clock.setText(timeString);
         });
     }
