@@ -10,8 +10,15 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
 import java.io.IOException;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 public class Timer extends Application {
 
@@ -19,11 +26,19 @@ public class Timer extends Application {
     Stage window;
     Scene timerScene, presetScene;
     Button timerButton, createPresetsButton;
-    ;
-    Label clock;
-    static int time;
+
+    Label clock = new Label("00:00:00");
+    String newTimerText = "";
 
     static boolean timerIsRunning;
+
+    private static final Duration INTERVAL = Duration.seconds(1);
+
+    private java.util.Timer timer;
+
+    private long startTime;
+    private Timeline timeline;
+
 
     public static void main(String[] args) {
         // Init
@@ -33,8 +48,8 @@ public class Timer extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        // String stylesheet = getClass().getResource("/style.css").toExternalForm();
 
+        // String stylesheet = getClass().getResource("/style.css").toExternalForm();
         window = primaryStage;
 
         // Create Display
@@ -42,7 +57,7 @@ public class Timer extends Application {
         layout.getStyleClass().add("bg-1");
 
         // Label timer display
-        Label clock = new Label("0:00");
+        clock.setFont(new Font("Arial", 26));
         clock.getStyleClass().add("bg-1");
         layout.setCenter(clock);
 
@@ -53,33 +68,57 @@ public class Timer extends Application {
         play.setOnAction(e -> {
             if (e.getSource() == play && !timerIsRunning) {
                 timerIsRunning = true;
-                checkTimerState();
+                play.setText("Stop");
+                startTimer();
             }
             else {
                 timerIsRunning = false;
-                checkTimerState();
+                play.setText("Play");
+                stopTimer();
             }
         });
 
         Scene scene = new Scene(layout, 500, 500);
         // scene.getStylesheets().add(stylesheet);
 
-        window.setTitle("TimeSavvy");
+        window.setTitle("Study Timer");
         window.setScene(scene);
         window.show();
 
     }
 
-    // Checks timer state on each click of play button
-    public void checkTimerState() {
-        if (timerIsRunning) {
-            // Play timer
-            System.out.println("Timer is running!");
+    // Plays timer, keeps track of time
+    private void startTimer() {
+        startTime = System.currentTimeMillis();
+
+        timeline = new Timeline(new KeyFrame(INTERVAL, event -> {
+            long elapsedTime = System.currentTimeMillis() - startTime;
+            updateElapsedTime(elapsedTime);
+        }));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+    }
+
+    private void stopTimer() {
+        if (timeline != null) {
+            timeline.stop();
+            timeline = null;
         }
-        else {
-            // Stop timer
-            System.out.println("Timer has been stopped!");
-        }
+    }
+
+    private void updateElapsedTime(long elapsedTime) {
+        long seconds = elapsedTime / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+
+        seconds %= 60;
+        minutes %= 60;
+
+        String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+
+        Platform.runLater(() -> {
+            clock.setText(timeString);
+        });
     }
 
 }
