@@ -77,6 +77,19 @@ public class Timer extends Application {
             }
         });
 
+        Button reset = new Button("Reset");
+        reset.getStyleClass().add("bg-1");
+        layout.setTop(reset);
+
+        // Resets stopwatch
+        reset.setOnAction(e -> {
+            play.setText("Play");
+            stopTimer();
+            elapsedTime = 0;
+            timeAtPause = 0;
+            clock.setText("00:00:00");
+        });
+
         Scene scene = new Scene(layout, 500, 500);
         // scene.getStylesheets().add(stylesheet);
 
