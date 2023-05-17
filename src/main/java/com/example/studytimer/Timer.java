@@ -134,7 +134,7 @@ public class Timer extends Application {
         // scene.getStylesheets().add("/src/css/style.css");
 
         // CSS Stylings
-        layout.setStyle("-fx-background-color: #192428");
+        layout.setStyle("-fx-background-color: #FFFFFF");
         topBar.setStyle("-fx-background-color: #414C50");
         bottomBar.setStyle("-fx-background-color: #414C50");
 
@@ -190,7 +190,7 @@ public class Timer extends Application {
                         "-fx-cursor: pointer"
         );
 
-        clock.setStyle("-fx-text-fill: white");
+        clock.setStyle("-fx-text-fill: black");
 
         Scene scene = new Scene(layout, 500, 500);
 
