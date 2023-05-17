@@ -3,6 +3,10 @@ package com.example.studytimer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -28,7 +32,6 @@ public class Timer extends Application {
     Label clock = new Label("00:00:00");
 
     static boolean timerIsRunning;
-    boolean isPaused = false;
 
     private static final Duration INTERVAL = Duration.seconds(1);
     long elapsedTime = 0;
@@ -46,22 +49,53 @@ public class Timer extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
+        Parent root = FXMLLoader.load(getClass().getResource("study_timer.fxml"));
+
         // String stylesheet = getClass().getResource("/style.css").toExternalForm();
         window = primaryStage;
 
-        // Create Display
-        BorderPane layout = new BorderPane();
-        layout.getStyleClass().add("bg-1");
+        // Stopwatch/Timer Buttons layout component
+        HBox topBar = new HBox();
+        topBar.setPadding(new Insets(15, 12, 15, 12));
+        topBar.setSpacing(30);
 
-        // Label timer display
+        // Stopwatch Mode Button
+        Button stopwatchBtn = new Button("Stopwatch");
+        stopwatchBtn.getStyleClass().add("bg-1");
+
+        // Timer Mode Button
+        Button timerBtn = new Button("Timer");
+        timerBtn.getStyleClass().add("bg-1");
+
+        topBar.getChildren().addAll(stopwatchBtn, timerBtn);
+        topBar.setAlignment(Pos.TOP_CENTER);
+
+        // Timer Display layout component
+        StackPane timerDisplay = new StackPane();
         clock.setFont(new Font("Arial", 26));
         clock.getStyleClass().add("bg-1");
-        layout.setCenter(clock);
+        timerDisplay.getChildren().addAll(clock);
 
-        // Play timer button
+        // Start / Pause / Reset Button layout component
+        HBox bottomBar = new HBox();
+        bottomBar.setPadding(new Insets(15, 12, 15, 12));
+        bottomBar.setSpacing(30);
+        bottomBar.setAlignment(Pos.TOP_CENTER);
+        bottomBar.setStyle("-fx-background-color: #909090;");
+
+
+
+        // Play / Pause button
         Button play = new Button("Play");
-        play.getStyleClass().add("bg-1");
-        layout.setBottom(play);
+        play.getStyleClass().add("bg-2");
+
+        // Reset button
+        Button reset = new Button("Reset");
+        reset.getStyleClass().add("bg-1");
+
+
+        // Add both buttons to bottom bar layout component
+        bottomBar.getChildren().addAll(play, reset);
 
         // If Play Button is clicked
         play.setOnAction(e -> {
@@ -77,11 +111,7 @@ public class Timer extends Application {
             }
         });
 
-        Button reset = new Button("Reset");
-        reset.getStyleClass().add("bg-1");
-        layout.setTop(reset);
-
-        // Resets stopwatch
+        // If reset button is clicked
         reset.setOnAction(e -> {
             play.setText("Play");
             stopTimer();
@@ -90,10 +120,85 @@ public class Timer extends Application {
             clock.setText("00:00:00");
         });
 
+
+        // Embed all layout components into one layout to establish scnee
+        BorderPane layout = new BorderPane();
+        layout.setTop(topBar);
+        layout.setCenter(timerDisplay);
+        layout.setBottom(bottomBar);
+
+
+        // scene.getStylesheets().add("style.css")
+
+        // Adding CSS file doesn't work for some reason, time to hard code it
+        // scene.getStylesheets().add("/src/css/style.css");
+
+        // CSS Stylings
+        layout.setStyle("-fx-background-color: #192428");
+        topBar.setStyle("-fx-background-color: #414C50");
+        bottomBar.setStyle("-fx-background-color: #414C50");
+
+        stopwatchBtn.setStyle(
+        "-fx-background-color: #39ACE7;" +
+        "-fx-border: none;" +
+        "-fx-text-color: white;" +
+        "-fx-padding: 10px 24px;" +
+        "-fx-text-align: center;" +
+        "-fx-text-decoration: none;" +
+        "-fx-display: inline-block;" +
+        "-fx-font-size: 16px;" +
+        "-fx-margin: 4px 2px;" +
+        "-fx-cursor: pointer"
+        );
+
+        timerBtn.setStyle(
+                "-fx-background-color: #39ACE7;" +
+                        "-fx-border: none;" +
+                        "-fx-text-color: white;" +
+                        "-fx-padding: 10px 24px;" +
+                        "-fx-text-align: center;" +
+                        "-fx-text-decoration: none;" +
+                        "-fx-display: inline-block;" +
+                        "-fx-font-size: 16px;" +
+                        "-fx-margin: 4px 2px;" +
+                        "-fx-cursor: pointer"
+        );
+
+        play.setStyle(
+                "-fx-background-color: #39ACE7;" +
+                        "-fx-border: none;" +
+                        "-fx-text-color: white;" +
+                        "-fx-padding: 10px 24px;" +
+                        "-fx-text-align: center;" +
+                        "-fx-text-decoration: none;" +
+                        "-fx-display: inline-block;" +
+                        "-fx-font-size: 16px;" +
+                        "-fx-margin: 4px 2px;" +
+                        "-fx-cursor: pointer"
+        );
+
+        reset.setStyle(
+                "-fx-background-color: #39ACE7;" +
+                        "-fx-border: none;" +
+                        "-fx-text-color: white;" +
+                        "-fx-padding: 10px 24px;" +
+                        "-fx-text-align: center;" +
+                        "-fx-text-decoration: none;" +
+                        "-fx-display: inline-block;" +
+                        "-fx-font-size: 16px;" +
+                        "-fx-margin: 4px 2px;" +
+                        "-fx-cursor: pointer"
+        );
+
+        clock.setStyle("-fx-text-fill: white");
+
         Scene scene = new Scene(layout, 500, 500);
-        // scene.getStylesheets().add(stylesheet);
 
         window.setTitle("Study Timer");
+        window.setMinHeight(300);
+        window.setMinWidth(300);
+        window.setMaxHeight(500);
+        window.setMaxWidth(500);
         window.setScene(scene);
         window.show();
 
@@ -123,7 +228,6 @@ public class Timer extends Application {
             timeline.stop();
             timeline = null;
             timerIsRunning = false;
-            isPaused = true;
             timeAtPause = elapsedTime;
         }
     }
